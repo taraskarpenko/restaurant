@@ -1,0 +1,2 @@
+Flask==1.1.1
+marshmallow==3.5.1

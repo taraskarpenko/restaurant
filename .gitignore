@@ -2,6 +2,9 @@
 instance/
 .webassets-cache
 
+#cash
+__pycache__
+
 # IPython
 profile_default/
 ipython_config.py
