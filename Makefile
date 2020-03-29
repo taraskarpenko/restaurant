@@ -17,8 +17,12 @@ venv-dev-create:
 	pip install -r requirements-common.txt && \
 	pip install -r requirements-dev.txt
 
+unit-test:
+	.dev-venv/bin/pytest test/unit
+
 test:
-	.dev-venv/bin/pytest $(PROJECT)
+	make lint
+	make unit-test
 
 lint:
 	.dev-venv/bin/mypy --ignore-missing-imports $(PROJECT)

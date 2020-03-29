@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.7.4
 
 ENV FLASK_RUN_HOST="0.0.0.0"
 ENV FLASK_RUN_PORT="5000"

@@ -1,4 +1,6 @@
-psycopg2-binary
+psycopg2-binary==2.8
 pytest==5.4.1
-mypy>=0.740
+mypy==0.740
 ipython
+requests
+parameterized

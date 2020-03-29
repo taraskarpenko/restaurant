@@ -1,8 +1,8 @@
-from typing import Tuple
+from typing import Tuple, Set
 
 from psycopg2 import sql
 
-from src.models import Location, Address, Restaurant
+from src.models import Restaurant
 
 
 def build_insert_tags_query(restaurant_id: str, tags: Tuple[str]) -> sql.Composed:
@@ -21,39 +21,25 @@ def build_insert_tags_query(restaurant_id: str, tags: Tuple[str]) -> sql.Compose
     return tags_query
 
 
-def build_insert_location_query(restaurant_id: str, location: Location) -> sql.Composed:
-    location_query = sql.SQL("""
-            INSERT INTO location (restaurant_id, longitude, latitude)
-            VALUES ({restaurant_id}, {longitude}, {latitude})
-            """).format(
-        restaurant_id=sql.Literal(restaurant_id),
-        longitude=sql.Literal(location.longitude),
-        latitude=sql.Literal(location.latitude)
-    )
-    return location_query
-
-
-def build_insert_address_query(restaurant_id: str, address: Address) -> sql.Composed:
-    address_query = sql.SQL("""
-            INSERT INTO address (restaurant_id, country, zip_code, city, address_line_1)
-            VALUES ({restaurant_id}, {country}, {zip_code}, {city}, {address_line_1})
-            """).format(
-        restaurant_id=sql.Literal(restaurant_id),
-        country=sql.Literal(address.country),
-        zip_code=sql.Literal(address.zip_code),
-        city=sql.Literal(address.city),
-        address_line_1=sql.Literal(address.address_line_1)
-    )
-    return address_query
-
-
 def build_insert_restaurant_query(data: Restaurant) -> sql.Composed:
     restaurant_query = sql.SQL("""
-            INSERT INTO restaurant
-            VALUES ({id}, {name}, {service_type}, {cuisine}, {web_address})
+            INSERT INTO restaurant (id, name, 
+                                    country, zip_code, city, address_line_1, 
+                                    longitude, latitude, 
+                                    service_type, cuisine, web_address)
+            VALUES ({id}, {name},
+                    {country}, {zip_code}, {city}, {address_line_1},
+                    {longitude}, {latitude},
+                    {service_type}, {cuisine}, {web_address})
             """).format(
         id=sql.Literal(data.id),
         name=sql.Literal(data.name),
+        country=sql.Literal(data.country),
+        zip_code=sql.Literal(data.zip_code),
+        city=sql.Literal(data.city),
+        address_line_1=sql.Literal(data.address_line_1),
+        longitude=sql.Literal(data.longitude),
+        latitude=sql.Literal(data.latitude),
         service_type=sql.Literal(data.service_type),
         cuisine=sql.Literal(data.cuisine),
         web_address=sql.Literal(data.web_address),
@@ -63,7 +49,10 @@ def build_insert_restaurant_query(data: Restaurant) -> sql.Composed:
 
 def build_get_restaurant_by_id_query(restaurant_id: str) -> sql.Composed:
     get_restaurant_query = sql.SQL("""
-                        SELECT id, name, service_type, cuisine, web_address
+                        SELECT id, name, 
+                                country, zip_code, city, address_line_1, 
+                                longitude, latitude, 
+                                service_type, cuisine, web_address
                         FROM restaurant
                         WHERE id = {id}
                         """).format(
@@ -118,11 +107,20 @@ def build_delete_restaurant_by_id_query(restaurant_id: str) -> sql.Composed:
 def build_update_restaurant_query(data: Restaurant) -> sql.Composed:
     restaurant_query = sql.SQL("""
             UPDATE restaurant
-            SET name={name}, service_type={service_type}, cuisine={cuisine}, web_address={web_address}
+            SET name={name}, 
+                country={country}, zip_code={zip_code}, city={city}, address_line_1={address_line_1},
+                longitude={longitude}, latitude={latitude},
+                service_type={service_type}, cuisine={cuisine}, web_address={web_address}
             WHERE id={id}
             """).format(
         id=sql.Literal(data.id),
         name=sql.Literal(data.name),
+        country=sql.Literal(data.country),
+        zip_code=sql.Literal(data.zip_code),
+        city=sql.Literal(data.city),
+        address_line_1=sql.Literal(data.address_line_1),
+        longitude=sql.Literal(data.longitude),
+        latitude=sql.Literal(data.latitude),
         service_type=sql.Literal(data.service_type),
         cuisine=sql.Literal(data.cuisine),
         web_address=sql.Literal(data.web_address),
@@ -130,57 +128,59 @@ def build_update_restaurant_query(data: Restaurant) -> sql.Composed:
     return restaurant_query
 
 
-def build_update_location_query(restaurant_id: str, location: Location) -> sql.Composed:
-    if location is None:
-        location_query = sql.SQL("""
-                    DELETE FROM location
-                    WHERE restaurant_id = {restaurant_id}
-                    """).format(
-            restaurant_id=sql.Literal(restaurant_id),
-        )
-    else:
-        location_query = sql.SQL("""
-                INSERT INTO location (restaurant_id, longitude, latitude)
-                VALUES ({restaurant_id}, {longitude}, {latitude})
-                ON CONFLICT ON CONSTRAINT location_restaurant_id_key 
-                DO UPDATE SET longitude={longitude}, latitude={latitude}
-                """).format(
-            restaurant_id=sql.Literal(restaurant_id),
-            longitude=sql.Literal(location.longitude),
-            latitude=sql.Literal(location.latitude)
-        )
-    return location_query
-
-
-def build_update_address_query(restaurant_id: str, address: Address) -> sql.Composed:
-    if address is None:
-        address_query = sql.SQL("""
-                DELETE FROM address
-                WHERE restaurant_id = {restaurant_id}
-                """).format(
-            restaurant_id=sql.Literal(restaurant_id),
-        )
-    else:
-        address_query = sql.SQL("""
-                INSERT INTO address (restaurant_id, country, zip_code, city, address_line_1)
-                VALUES ({restaurant_id}, {country}, {zip_code}, {city}, {address_line_1})
-                ON CONFLICT ON CONSTRAINT address_restaurant_id_key 
-                DO UPDATE SET country={country}, zip_code={zip_code}, city={city}, address_line_1={address_line_1}
-                """).format(
-            restaurant_id=sql.Literal(restaurant_id),
-            country=sql.Literal(address.country),
-            zip_code=sql.Literal(address.zip_code),
-            city=sql.Literal(address.city),
-            address_line_1=sql.Literal(address.address_line_1)
-        )
-    return address_query
-
-
 def build_delete_tags_query(restaurant_id: str) -> sql.Composed:
     delete_tags_query = sql.SQL("""
-                    DELETE FROM tags
-                    WHERE restaurant_id = {restaurant_id}
-                    """).format(
+            DELETE FROM tags
+            WHERE restaurant_id = {restaurant_id}
+            """).format(
         restaurant_id=sql.Literal(restaurant_id),
     )
     return delete_tags_query
+
+
+def build_select_all_restaurant_ids() -> sql.Composed:
+    query = sql.SQL("""
+                SELECT distinct id 
+                FROM restaurant 
+                """)
+    return query
+
+
+def build_select_restaurants_by_ids(ids: Set[str]) -> sql.Composed:
+    get_restaurants_query = sql.SQL("""
+                            SELECT id, name,
+                                    country, zip_code, city, address_line_1, 
+                                    longitude, latitude,
+                                    service_type, cuisine, web_address
+                            FROM restaurant
+                            WHERE id IN ({ids})
+                            """).format(
+        ids=sql.SQL(',').join(map(sql.Literal, ids))
+    )
+    return get_restaurants_query
+
+
+def build_select_restaurant_ids_by_tags_query(tags: Tuple[str]) -> sql.Composed:
+    query = sql.SQL("""
+                SELECT distinct restaurant_id
+                FROM tags
+                WHERE tag IN ({})
+                """).format(
+        sql.SQL(',').join(map(sql.Literal, tags))
+    )
+    return query
+
+
+def build_select_restaurant_ids_by_field_query(filters: dict) -> sql.Composed:
+    keys_templates = []
+    values = []
+    for k, v in filters.items():
+        keys_templates.append(str(k) + " in ({})")
+        values.append(v)
+    where_clause_template = " AND ".join(keys_templates)
+
+    query_header = "SELECT distinct id FROM restaurant WHERE "
+    query = sql.SQL(query_header + where_clause_template).format(
+        *[sql.SQL(',').join(map(sql.Literal, values_for_key)) for values_for_key in values]
+    )
+    return query
