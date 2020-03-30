@@ -2,7 +2,7 @@ import logging
 import os
 from typing import List
 
-from flask import Flask, request, jsonify, Request
+from flask import Flask, request, jsonify
 from flask_caching import Cache
 from marshmallow import ValidationError
 from psycopg2._psycopg import DataError
@@ -34,6 +34,7 @@ def handle_post_restaurant(rq_json: dict) -> models.Restaurant:
 
     cache.delete_memoized(list_restaurants_by_filters)
     return create_restaurant_request
+
 
 @cache.memoize()
 def handle_get_restaurant_by_id(restaurant_id: str) -> models.Restaurant:

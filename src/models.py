@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from typing import Optional, List
 
 
 @dataclass
@@ -15,4 +15,4 @@ class Restaurant:
     service_type: Optional[str] = None
     cuisine: Optional[str] = None
     web_address: Optional[str] = None
-    tags: Optional[Tuple[str]] = None
+    tags: Optional[List[str]] = None

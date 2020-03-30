@@ -8,6 +8,7 @@ from src import models
 class RestaurantRequestSchema(Schema):
     class Meta:
         unknown = EXCLUDE
+
     name = fields.String(required=True)
     country = fields.String(required=True)
     zip_code = fields.String(required=True)

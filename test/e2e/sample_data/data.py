@@ -1,5 +1,5 @@
-import string
 import random
+import string
 
 restaurant_template = {
     "web_address": "www.example.com",
@@ -25,7 +25,7 @@ def tags_generator():
     count = random.randint(3, 8)
     for _ in range(count):
         length = random.randint(2, 4)
-        t = ''.join(random.choice(alphabet) for i in range(length))
+        t = ''.join(random.choice(alphabet) for _ in range(length))
         response.append(t)
     return response
 
@@ -34,7 +34,7 @@ def restaurant_generator() -> dict:
     longitude = ".".join([str(random.randint(0, 360)), str(random.randint(100000, 900000))])
     latitude = ".".join([str(random.randint(0, 180) - 90), str(random.randint(100000, 900000))])
     address_line_1 = ''.join(
-        random.choice(alphabet) for i in range(random.randint(5, 15))
+        random.choice(alphabet) for _ in range(random.randint(5, 15))
     ).capitalize() + " street " + str(random.randint(1, 150))
 
     res = dict()

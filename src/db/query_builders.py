@@ -1,11 +1,11 @@
-from typing import Tuple, Set
+from typing import Tuple, Set, List
 
 from psycopg2 import sql
 
 from src.models import Restaurant
 
 
-def build_insert_tags_query(restaurant_id: str, tags: Tuple[str]) -> sql.Composed:
+def build_insert_tags_query(restaurant_id: str, tags: List[str]) -> sql.Composed:
     tags_placeholders = ", ".join(
         [
             "({0}, {" + str(i + 1) + "})"
@@ -143,7 +143,7 @@ def build_select_all_restaurant_ids() -> sql.Composed:
                 SELECT distinct id 
                 FROM restaurant 
                 """)
-    return query
+    return sql.Composed(query)
 
 
 def build_select_restaurants_by_ids(ids: Set[str]) -> sql.Composed:

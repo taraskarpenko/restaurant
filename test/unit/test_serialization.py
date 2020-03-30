@@ -1,5 +1,3 @@
-import json
-
 import pytest
 from marshmallow import ValidationError
 
@@ -48,5 +46,6 @@ def test_serialize_fails_on_missing_required():
             RestaurantRequestSchema().load(payload)
 
         f()
-    expected_error_message = {'city': ['Missing data for required field.'], 'name': ['Missing data for required field.']}
+    expected_error_message = {'city': ['Missing data for required field.'],
+                              'name': ['Missing data for required field.']}
     assert validation_error.value.args[0] == expected_error_message

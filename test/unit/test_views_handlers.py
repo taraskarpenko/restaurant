@@ -8,8 +8,7 @@ from src.app import handle_get_restaurant_by_id, handle_delete_restaurant_by_id,
     list_restaurants_by_filters
 
 
-@patch('src.db.pg_client.select_restaurants_by_filters')
-def test_list_restaurants_by_filters_fails_for_unsupported_key(db_patch):
+def test_list_restaurants_by_filters_fails_for_unsupported_key():
     data = MultiDict()
     data.add('not_a_filter', 'not_a_value')
     with pytest.raises(ValueError) as value_error:

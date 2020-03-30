@@ -1,4 +1,3 @@
-import os
 import logging
 from typing import List, Any, Set, Tuple
 
@@ -20,7 +19,7 @@ connection_params = {
     "host": DB_HOST,
     "user": DB_USER,
     "password": DB_PASSWORD,
-    "database": "restaurant"
+    "database": "restaurant",
 }
 
 connection = connect(**connection_params)
@@ -47,10 +46,11 @@ def get_restaurant_by_id(restaurant_id: str) -> Restaurant:
 
         get_tags_query = qb.build_get_tags_by_restaurant_id_query(restaurant_id)
         cursor.execute(get_tags_query)
+
         if cursor.rowcount > 0:
-            tags = [row['tag'] for row in cursor.fetchall()]
+            tags = [str(row['tag']) for row in cursor.fetchall()]
         else:
-            tags = None
+            tags = []
 
         return Restaurant(tags=tags, **restaurant)
 
