@@ -20,6 +20,9 @@ venv-dev-create:
 unit-test:
 	.dev-venv/bin/pytest test/unit
 
+e2e-test:
+	.dev-venv/bin/pytest test/e2e
+
 test:
 	make lint
 	make unit-test
